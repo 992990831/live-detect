@@ -18,16 +18,23 @@ export const GetSessionCode = async (token: string) => {
         method: "POST",
         mode: 'cors',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: JSON.stringify({
-            'type': 1
-        })
+        body: 
+        'type=0&min_code_length=4&max_code_length=4'
+        // JSON.stringify({
+        //     //https://cloud.baidu.com/doc/FACE/s/Ikrycq2k2
+        //     //0为语音验证和唇语验证步骤， 1为视频动作活体 默认0
+        //     'type': 0,
+        //     'min_code_length': 4,
+        //     'max_code_length': 4
+        // })
     }).then(response => response.json()).catch(error => {
-        alert(error);
+        alert('请检查是否余额不足');
+        return ['XXX', '000'];
     });
     
-    return json.result.session_id;
+    return [json.result.session_id, json.result.code];
 }
 
 export const VideoVerify = async (token:string, sessionCode: string, videoBase64: string) => {
@@ -44,7 +51,7 @@ export const VideoVerify = async (token:string, sessionCode: string, videoBase64
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'//'application/json;charset=UTF-8'
         },
-        body: `type_identify=action&video_base64=${videoBase64}&session_id=${sessionCode}`
+        body: `type_identify=voice&video_base64=${videoBase64}&session_id=${sessionCode}&lip_identify=COMMON`
         
         // JSON.stringify({
         //     'type_identify': 'action',
@@ -52,9 +59,20 @@ export const VideoVerify = async (token:string, sessionCode: string, videoBase64
         //     'session_id': sessionCode
         // })
     }).then(response => response.json()).catch(error => {
-        alert(error);
+        //alert(error);
+
+        return {
+            err_msg: 'failed'
+        }
     });
     //alert(JSON.stringify(json));
-    //alert(json.result.score);
-    return json.result.score;
+    
+    let success = json.err_msg === 'SUCCESS';
+
+    if(success)
+    {
+        return json.result.code.similarity;
+    }
+
+    return 0;
 }

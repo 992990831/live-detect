@@ -24,7 +24,8 @@ import { VideoLive } from './Pages/VideoLive';
 
 function App() {
   return (
-    <Router>        
+    <>
+      <Router>        
         <Routes>
           <Route path="/" element={<Home></Home>} />
           <Route path="/success" element={<Success></Success>} />
@@ -45,7 +46,10 @@ function App() {
           <Route path="/pwa/charging" element={<Charging></Charging>} /> */}
           {/* <Route path="*" element={<Exterior></Exterior>} /> */}
         </Routes>
-    </Router>
+      </Router>
+      <p className='App-term'>—上海敏识网络科技有限公司提供技术支持—</p>
+    </>
+    
 
   );
 }

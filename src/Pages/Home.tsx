@@ -23,11 +23,8 @@ function Home() {
         <img src={logo} alt="" className="logo" />
         <Space wrap block style={{ '--gap-vertical': '24px' }} align='center' justify='center' direction='vertical' className='button-list'>
           
-          <Button block color='primary' size='large' onClick={gotoVideoLive}>
+          <Button block color='primary' size='large' onClick={gotoVideoLive} style={{width:'70vw'}}>
           &nbsp;&nbsp;&nbsp;&nbsp;视频活体检测&nbsp;&nbsp;&nbsp;&nbsp;
-          </Button>
-          <Button block color='primary' size='large' disabled>
-          &nbsp;&nbsp;&nbsp;&nbsp;炫瞳活体检测&nbsp;&nbsp;&nbsp;&nbsp;
           </Button>
           {/* <Button block color='primary' size='large' onClick={gotoPicLive}>
           &nbsp;&nbsp;&nbsp;&nbsp;图片活体检测&nbsp;&nbsp;&nbsp;&nbsp;

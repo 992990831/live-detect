@@ -7,6 +7,14 @@
   pointer-events: none;
 }
 
+.App-term {
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  text-align: center;
+  color: #969696;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -38,16 +46,16 @@
 }
 
 .logo {
-  width: 50%;
+  width: 40%;
   margin: 0 auto;
-  left: 25%;
+  left: 30%;
   top: 8vh;
   bottom: 5vh;
   position: relative;
 }
 
 .button-list {
-  top: 18vh;
+  top: 30vh;
   position: relative;
 }
 

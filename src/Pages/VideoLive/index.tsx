@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Button, Space, Mask, DotLoading } from 'antd-mobile';
 import { BrowserRouter as Router, Route, Link, Routes, useNavigate } from "react-router-dom";
 import { GetSessionCode, VideoVerify } from '../../Util/Util';
-import logo from '../../assets/images/user-record.png';
+import avator from '../../assets/images/avator.png';
 import './index.css';
 
 const token = '24.8b5d9f9d25257ac79bdc93b47b65f256.2592000.1650612168.282335-25828496';
@@ -10,6 +10,21 @@ const token = '24.8b5d9f9d25257ac79bdc93b47b65f256.2592000.1650612168.282335-258
 export const VideoLive = () => {
     const camRef = useRef(null);
     const [loading, setLoading] = useState(false);
+    const [sessionCode, setSessionCode] = useState('');
+    const [actions, setActions] = useState('');
+    const [btnDisable, setBtnDisable] = useState(false);
+    useEffect(() => {
+        GetSessionCode(token).then((result) => {
+            if(result[0]==='XXX')
+            {
+                setBtnDisable(true);
+                return;
+            }
+            setSessionCode(result[0]);
+            setActions(result[1]);
+        });
+    }, []);
+
     const navigate = useNavigate();
 
     const onCameraClick = () => {
@@ -34,55 +49,75 @@ export const VideoLive = () => {
             setLoading(true);
 
             var dataBase64 = e.target.result; //result是你读取到的文件内容，此属性读取完成才能使用
-            console.log(encodeURIComponent(dataBase64.split(',')[1]));
+            //console.log(encodeURIComponent(dataBase64.split(',')[1]));
 
             if (dataBase64) {
-                GetSessionCode(token).then((sessionCode) => {
-                    //视频的base64编码是不包含视频头的，如 data:video/mp4;base64,；
-                    //setVideoStr(dataBase64.substring(45));
-                    //VideoVerify(token, sessionCode, encodeURI(dataBase64.substring(45)));
-                    VideoVerify(token, sessionCode, encodeURIComponent(dataBase64.split(',')[1]))
-                        .then((score) => {
+                //视频的base64编码是不包含视频头的，如 data:video/mp4;base64,；
+                //setVideoStr(dataBase64.substring(45));
+                //VideoVerify(token, sessionCode, encodeURI(dataBase64.substring(45)));
+                VideoVerify(token, sessionCode, encodeURIComponent(dataBase64.split(',')[1]))
+                    .then((score) => {
+                        if (score >= 0.75) {
+                            navigate('/success');
+                        }
+                        else {
+                            navigate('/fail');
+                        }
 
-                            if(score >= 0.3)
-                            {
-                                navigate('/success');
-                            }
-                            else{
-                                navigate('/fail');
-                            }
-
-                            setLoading(false);
-                        });
-                });
+                        setLoading(false);
+                    });
             }
         }
     }
 
     return (
         <>
-            <img src={logo} alt="" className="logo" />
-            <ul style={{   
-                left: '22vw',
-                top: '5vh',
-                position: 'relative',
-                fontSize: '1rem',
-                color: 'cornflowerblue',
-                fontWeight: 'bold',
-                lineHeight: '1.8rem'}}>
+            <p className='title'>请按要求录制视频</p>
+            <img src={avator} alt='avator' style={{width:'30vw', left:'35vw', position:'relative'}} />
+            <p className='action-num'>{actions}</p>
+            <ul className='notice'>
                 <li>环境安静，光线充足</li>
                 <li>面部清晰完整</li>
-                <li>拍摄2-4秒</li>
+                <li>普通话匀速朗读数字</li>
+                <li>拍摄3秒以内</li>
             </ul>
-            <Space wrap block style={{ '--gap-vertical': '12px', marginTop: '10vh' }} align='center' justify='center' direction='vertical'>
-                <Button block color='primary' size='large' onClick={onCameraClick}>
-                    &nbsp;&nbsp;&nbsp;&nbsp;点击拍摄视频&nbsp;&nbsp;&nbsp;&nbsp;
+            {/* <div className='list'>
+                <div className='left'>
+                    <img src={require("../../assets/images/subtitle-user.png")} alt="" className='subtitle-img' />
+                </div>
+
+                <div className='list-text'>
+                    <p className='main-title'>确保真人操作</p>
+                    <p>非真人操作将无法通过活体验证</p>
+                </div>
+            </div>
+
+            <div className='list'>
+                <div className='left'>
+                    <img src={require("../../assets/images/subtitle-light.png")} alt="" className='subtitle-img' />
+                </div>
+                <div className='list-text'>
+                    <p className='main-title'>识别光线适中</p>
+                    <p>请保证光线不要过暗或过亮，不要背光</p>
+                </div>
+            </div>
+
+            <div className='list'>
+                <div className='left'>
+                    <img src={require("../../assets/images/subtitle-face.png")} alt="" className='subtitle-img' />
+                </div>
+                <div className='list-text'>
+                    <p className='main-title'>正面对准手机</p>
+                    <p>保证您的脸出现在取景框内</p>
+                </div>
+            </div> */}
+
+            <Space wrap block style={{ '--gap-vertical': '12px', position:'fixed', bottom:'30px', left:'15vw' }} align='center' justify='center' direction='vertical'>
+                <Button disabled={btnDisable} shape='rounded' block color='primary' size='large' onClick={onCameraClick} style={{ width: '70vw' }}>
+                    开始录制
                 </Button>
                 <input type='file' id='videoLive' accept='video/*' capture='user' onChange={fileChange}
                     style={{ display: 'none' }} ref={camRef} />
-                <Button block color='primary' size='large' onClick={goMenu}>
-                    &nbsp;&nbsp;&nbsp;&nbsp;返回上级菜单&nbsp;&nbsp;&nbsp;&nbsp;
-                </Button>
             </Space>
 
             {/* <Mask visible={loading} onMaskClick={() => setLoading(false)} /> */}
